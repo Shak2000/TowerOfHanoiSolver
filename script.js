@@ -57,19 +57,33 @@ async function restartGame() {
 }
 
 async function autoSolve() {
-  const res = await fetch("/solve", { method: "POST" });
-  const { steps } = await res.json();
+  if (!numDisks) {
+    alert("You need to start a game first!");
+    return;
+  }
 
-  // 1) show the initial state
+  // 1. Reset the board to full-left
+  await fetch(`/start?rings=${numDisks}`, { method: "POST" });
+
+  // 2. Show that reset state immediately
   await render();
   await new Promise(r => setTimeout(r, 600));
 
-  // 2) then animate each step
+  // 3. Fetch the full sequence of steps (including the reset state)
+  const res = await fetch("/solve", { method: "POST" });
+  if (!res.ok) {
+    alert("Error solving the puzzle");
+    return;
+  }
+  const { steps } = await res.json();
+
+  // 4. Animate through all steps
   for (const board of steps) {
     await render(board);
     await new Promise(r => setTimeout(r, 600));
   }
-  document.getElementById('status').textContent = 'Solved!';
+
+  document.getElementById("status").textContent = "Solved!";
 }
 
 function quitGame() {
