@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Tower of Hanoi</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="container">
+    <h1>Tower of Hanoi</h1>
+
+    <div id="controls">
+      <input
+        type="number"
+        id="num-disks"
+        min="1"
+        max="10"
+        placeholder="Enter number of rings"
+      />
+      <button id="start-btn" onclick="startGame()">Start Game</button>
+      <button id="restart-btn" class="in-game" onclick="restartGame()">Restart</button>
+      <button id="undo-btn" class="in-game" onclick="undoMove()">Undo</button>
+      <button id="solve-btn" class="in-game" onclick="autoSolve()">Solve</button>
+      <button id="quit-btn"  class="in-game" onclick="quitGame()">Quit</button>
+    </div>
+
+    <div id="pegs-container"></div>
+
+    <div id="status">Please enter number of rings and press Start.</div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
