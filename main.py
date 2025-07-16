@@ -36,8 +36,8 @@ class Game:
     def solve(self):
         self.start(self.rings)  # Reset the game to its initial state
         print("Solving Tower of Hanoi...")
-        self.print_board() # <--- Add this line to show the initial board
-        self._solve_recursive(self.rings, 0, 2, 1) # Start solving from peg 0 to 2, using 1 as auxiliary
+        self.print_board()  # <--- Add this line to show the initial board
+        self._solve_recursive(self.rings, 0, 2, 1)  # Start solving from peg 0 to 2, using 1 as auxiliary
 
     def _solve_recursive(self, n, src, dst, aux):
         if n == 1:
