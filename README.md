@@ -1,162 +1,133 @@
 # Tower of Hanoi Solver
 
-A comprehensive Tower of Hanoi puzzle solver with both web interface and command-line versions. This classic puzzle challenges players to move all disks from one peg to another following specific rules.
+A web-based implementation of the classic Tower of Hanoi puzzle featuring both 2D and 3D interactive interfaces. Built with Python FastAPI backend and JavaScript/Three.js frontend.
 
 ## Features
 
-### Web Interface
-- **Interactive GUI**: Click-to-select peg interface
-- **Visual Feedback**: Animated disk movements and real-time board updates
-- **Game Controls**: Start, restart, undo, auto-solve, and quit functionality
-- **Customizable Difficulty**: Choose 1-10 rings
-- **Auto-Solver**: Watch the computer solve the puzzle step-by-step
-- **Move History**: Undo previous moves
+- **Dual Interface Options**:
+  - Classic 2D web interface with click-based gameplay
+  - Immersive 3D interface with drag-and-drop functionality using Three.js
+- **Interactive Gameplay**: Move rings manually with visual feedback
+- **Auto-Solver**: Watch the computer solve the puzzle step by step
+- **Game Controls**: Start, restart, undo moves, and quit functionality
+- **Configurable Difficulty**: Support for 1-10 rings
+- **Move Validation**: Prevents invalid moves (larger rings on smaller ones)
+- **Visual Feedback**: Clear status messages and animated solutions
 
-### Command Line Interface
-- **Text-based gameplay**: Perfect for terminal enthusiasts
-- **Manual solving**: Move rings step-by-step
-- **Computer solver**: Let the algorithm demonstrate the solution
-- **Game management**: Start new games, restart, and undo moves
+## Screenshots
 
-## Game Rules
+### 2D Interface
+The classic web interface features colorful rings stacked on pegs with click-to-move gameplay.
 
-The Tower of Hanoi follows three simple rules:
-1. Only one disk can be moved at a time
-2. Each move consists of taking the upper disk from one of the stacks and placing it on top of another stack
-3. No disk may be placed on top of a smaller disk
+### 3D Interface
+The Three.js interface provides an immersive 3D experience with drag-and-drop controls and orbital camera movement.
 
 ## Installation
 
 ### Prerequisites
 - Python 3.7+
-- FastAPI
-- Uvicorn (for web server)
+- Modern web browser with JavaScript enabled
 
 ### Setup
 1. Clone or download the project files
-2. Install dependencies:
+2. Install required Python dependencies:
    ```bash
    pip install fastapi uvicorn
    ```
 
-## Usage
-
-### Web Interface
-1. Start the web server:
+3. Run the FastAPI server:
    ```bash
    uvicorn app:app --reload
    ```
-2. Open your browser and navigate to `http://localhost:8000`
-3. Enter the number of rings (1-10) and click "Start Game"
-4. Click pegs to select source and destination for moves
-5. Use the control buttons:
-   - **Restart**: Reset the current game
-   - **Undo**: Revert the last move
-   - **Solve**: Watch the computer solve the puzzle
-   - **Quit**: Return to the start screen
 
-### Command Line Interface
-Run the standalone version:
-```bash
-python main.py
-```
-
-Follow the menu prompts to:
-- Start a new game with your chosen number of rings
-- Make manual moves by specifying source and destination pegs (0, 1, or 2)
-- Let the computer solve the puzzle automatically
-- Undo moves or restart the game
+4. Open your browser and navigate to:
+   - 2D Interface: `http://localhost:8000/`
+   - 3D Interface: `http://localhost:8000/three-ui.html`
 
 ## File Structure
 
 ```
 tower-of-hanoi/
-├── app.py          # FastAPI web server and API endpoints
-├── main.py         # Game logic and command-line interface
-├── index.html      # Web interface HTML
-├── styles.css      # Web interface styling
-├── script.js       # Web interface JavaScript
-└── README.md       # This file
+├── app.py              # FastAPI web server and API endpoints
+├── main.py             # Core game logic and Tower of Hanoi solver
+├── index.html          # 2D interface HTML
+├── three-ui.html       # 3D interface HTML
+├── script.js           # 2D interface JavaScript
+├── three-ui.js         # 3D interface JavaScript with Three.js
+└── styles.css          # Shared CSS styles
 ```
+
+## How to Play
+
+### 2D Interface
+1. Enter the number of rings (1-10) in the input field
+2. Click "Start Game" to begin
+3. Click on a peg to select it as the source
+4. Click on another peg to move the top ring from source to destination
+5. Use game controls: Restart, Undo, Solve, or Quit
+
+### 3D Interface
+1. Enter the number of rings and click "Start Game"
+2. Use mouse/touch to orbit around the 3D scene
+3. Drag the top ring from any peg to move it
+4. Drop it on the desired destination peg
+5. Same game controls available as 2D version
+
+## Game Rules
+
+The Tower of Hanoi follows these classic rules:
+- Only one ring can be moved at a time
+- Only the top ring from a peg can be moved
+- A larger ring cannot be placed on top of a smaller ring
+- The goal is to move all rings from the leftmost peg to the rightmost peg
+
+## API Endpoints
+
+- `POST /start?rings=N` - Start a new game with N rings
+- `GET /state` - Get current board state
+- `POST /move?src=X&dst=Y` - Move ring from peg X to peg Y
+- `POST /solve` - Get complete solution steps
+- `POST /undo` - Undo the last move
 
 ## Technical Details
 
-### Backend (Python)
-- **Game Class**: Core game logic with move validation, history tracking, and solving algorithm
-- **FastAPI Server**: RESTful API endpoints for web interface communication
-- **Recursive Solver**: Implements the classic recursive solution algorithm
+### Backend
+- **FastAPI**: Modern Python web framework for the REST API
+- **Game Logic**: Recursive solver using the classic three-peg algorithm
+- **State Management**: In-memory game state with move history for undo functionality
 
-### Frontend (Web)
-- **Vanilla JavaScript**: No external frameworks required
-- **Responsive Design**: Clean, modern interface that works on different screen sizes
-- **Real-time Updates**: Smooth animations and immediate feedback
+### Frontend
+- **2D Interface**: Vanilla JavaScript with DOM manipulation
+- **3D Interface**: Three.js WebGL library for 3D rendering
+- **Responsive Design**: CSS flexbox layouts for different screen sizes
+- **Interactive Controls**: Mouse/touch support for both interfaces
 
-### API Endpoints
-- `POST /start?rings=N`: Initialize a new game with N rings
-- `GET /state`: Get current board state
-- `POST /move?src=X&dst=Y`: Move ring from peg X to peg Y
-- `POST /solve`: Get complete solution sequence
-- `POST /undo`: Undo the last move
+### 3D Features
+- **Orbit Controls**: Mouse/touch camera controls for 3D navigation
+- **Drag & Drop**: Intuitive ring movement with raycasting
+- **Dynamic Lighting**: Ambient and directional lighting for visual appeal
+- **Responsive Rendering**: Automatic canvas resizing and proper aspect ratios
 
-## Algorithm
+## Browser Compatibility
 
-The solver uses the classic recursive approach:
-1. Move n-1 disks from source to auxiliary peg
-2. Move the largest disk from source to destination
-3. Move n-1 disks from auxiliary to destination peg
+- **2D Interface**: All modern browsers
+- **3D Interface**: Browsers with WebGL support (Chrome, Firefox, Safari, Edge)
 
-**Time Complexity**: O(2^n)  
-**Space Complexity**: O(n) for recursion stack
+## Performance Notes
 
-## Customization
-
-### Difficulty Levels
-- **Beginner**: 3-4 rings
-- **Intermediate**: 5-6 rings  
-- **Advanced**: 7-8 rings
-- **Expert**: 9-10 rings
-
-### Styling
-Modify `styles.css` to customize:
-- Colors and themes
-- Ring appearance
-- Peg styling
-- Animation effects
+- Recommended maximum of 10 rings for optimal performance
+- 3D interface may require hardware acceleration for smooth rendering
+- Auto-solve animation speed can be adjusted by modifying the timeout values in the JavaScript files
 
 ## Contributing
 
-Feel free to enhance the project by:
-- Adding sound effects
-- Implementing different visual themes
-- Adding move counter and timer
-- Creating difficulty-based scoring
-- Adding keyboard shortcuts
+Feel free to submit issues, feature requests, or pull requests to improve the game. Some potential enhancements:
+- Sound effects and music
+- Different color themes
+- Save/load game states
+- Multiplayer functionality
+- Mobile-optimized touch controls
 
 ## License
 
 This project is open source and available under the MIT License.
-
-## Mathematical Background
-
-The minimum number of moves required to solve the Tower of Hanoi with n disks is **2^n - 1**.
-
-Examples:
-- 3 disks: 7 moves minimum
-- 4 disks: 15 moves minimum
-- 5 disks: 31 moves minimum
-- 10 disks: 1,023 moves minimum
-
-## Troubleshooting
-
-### Common Issues
-1. **Server won't start**: Ensure FastAPI and Uvicorn are installed
-2. **Web interface not loading**: Check that you're accessing `http://localhost:8000`
-3. **Invalid moves**: Remember that larger rings cannot be placed on smaller ones
-4. **Undo not working**: Undo is only available after making at least one move
-
-### Performance Notes
-- Games with 10+ rings may take noticeable time to auto-solve
-- The web interface is optimized for smooth animations up to 10 rings
-- Command-line version can handle any number of rings (memory permitting)
-
-Enjoy solving the Tower of Hanoi puzzle!

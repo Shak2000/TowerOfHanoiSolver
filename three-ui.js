@@ -1,6 +1,6 @@
 // Tower of Hanoi 3D UI using Three.js
-import * as THREE from 'https://unpkg.com/three@0.153.0/build/three.module.js?module';
-import { OrbitControls } from 'https://unpkg.com/three@0.153.0/examples/jsm/controls/OrbitControls.js?module';
+import * as THREE from 'https://unpkg.com/three@0.153.0/build/three.module.js?module'; // import three.js
+import { OrbitControls } from 'https://unpkg.com/three@0.153.0/examples/jsm/controls/OrbitControls.js?module'; // import orbit controls
 
 let scene, camera, renderer, controls;
 let pegs = [], rings = [];
@@ -22,22 +22,24 @@ function showInGame(show) {
   document.getElementById('num-disks').style.display = show ? 'none' : 'inline-block';
 }
 
+// Get the size of the canvas
 function getCanvasSize() {
   const container = document.getElementById('three-canvas');
   return [container.clientWidth, container.clientHeight];
 }
 
+// Initialize the 3D scene
 function init3D() {
-  scene = new THREE.Scene();
-  scene.background = new THREE.Color(0x222222);
-  const [w, h] = getCanvasSize();
-  camera = new THREE.PerspectiveCamera(45, w/h, 1, 1000);
+  scene = new THREE.Scene(); // Create the scene
+  scene.background = new THREE.Color(0x222222); // Set the background color
+  const [w, h] = getCanvasSize(); // Get the size of the canvas
+  camera = new THREE.PerspectiveCamera(45, w/h, 1, 1000); // Create the camera
   camera.position.set(0, 60, 180); // Lowered Y for better centering
   camera.lookAt(0, 40, 0); // Lowered lookAt for better centering
-  renderer = new THREE.WebGLRenderer({ antialias: true });
-  renderer.setSize(w, h);
-  renderer.setPixelRatio(window.devicePixelRatio);
-  const container = document.getElementById('three-canvas');
+  renderer = new THREE.WebGLRenderer({ antialias: true }); // Create the renderer
+  renderer.setSize(w, h); // Set the size of the renderer
+  renderer.setPixelRatio(window.devicePixelRatio); // Set the pixel ratio
+  const container = document.getElementById('three-canvas'); // Get the container
   container.innerHTML = '';
   container.appendChild(renderer.domElement);
   window.addEventListener('resize', onWindowResize);
@@ -48,20 +50,21 @@ function init3D() {
   controls.minDistance = 80;
   controls.maxDistance = 300;
   // Lighting
-  scene.add(new THREE.AmbientLight(0xffffff, 0.7));
-  const dirLight = new THREE.DirectionalLight(0xffffff, 0.7);
-  dirLight.position.set(0, 100, 100);
-  scene.add(dirLight);
+  scene.add(new THREE.AmbientLight(0xffffff, 0.7)); // Add ambient light
+  const dirLight = new THREE.DirectionalLight(0xffffff, 0.7); // Add directional light
+  dirLight.position.set(0, 100, 100); // Set the position of the directional light
+  scene.add(dirLight); // Add the directional light to the scene
   // Base
-  const baseGeo = new THREE.BoxGeometry(100, 4, 30);
-  const baseMat = new THREE.MeshPhongMaterial({ color: 0x8d6e63 });
-  const base = new THREE.Mesh(baseGeo, baseMat);
-  base.position.y = BOARD_Y + 2;
+  const baseGeo = new THREE.BoxGeometry(100, 4, 30); // Create the base geometry
+  const baseMat = new THREE.MeshPhongMaterial({ color: 0x8d6e63 }); // Create the base material
+  const base = new THREE.Mesh(baseGeo, baseMat); // Create the base
+  base.position.y = BOARD_Y + 2; // Set the position of the base
   scene.add(base);
   // Pegs (created in createRings based on numDisks)
   pegs = [];
 }
 
+// Create the pegs
 function createPegs() {
   // Remove old pegs
   pegs.forEach(peg => scene.remove(peg));
@@ -69,10 +72,10 @@ function createPegs() {
   // Set PEG_HEIGHT dynamically
   PEG_HEIGHT = RING_HEIGHT * numDisks + 30;
   for (let i = 0; i < 3; i++) {
-    const pegGeo = new THREE.CylinderGeometry(PEG_RADIUS, PEG_RADIUS, PEG_HEIGHT, 32);
-    const pegMat = new THREE.MeshPhongMaterial({ color: 0x1976d2 });
-    const peg = new THREE.Mesh(pegGeo, pegMat);
-    peg.position.set(PEG_POSITIONS[i], BOARD_Y + PEG_HEIGHT/2 + 2, 0);
+    const pegGeo = new THREE.CylinderGeometry(PEG_RADIUS, PEG_RADIUS, PEG_HEIGHT, 32); // Create the peg geometry
+    const pegMat = new THREE.MeshPhongMaterial({ color: 0x1976d2 }); // Create the peg material
+    const peg = new THREE.Mesh(pegGeo, pegMat); // Create the peg
+    peg.position.set(PEG_POSITIONS[i], BOARD_Y + PEG_HEIGHT/2 + 2, 0); // Set the position of the peg
     scene.add(peg);
     pegs.push(peg);
   }
@@ -91,6 +94,7 @@ function clearRings() {
   rings = [];
 }
 
+// Create the rings
 function createRings(board) {
   clearRings();
   if (!numDisks) return;
@@ -108,9 +112,9 @@ function createRings(board) {
       // disk: 1 (smallest) ... numDisks (largest)
       const t = (disk - 1) / (numDisks - 1 || 1); // 0 for smallest, 1 for largest
       const radius = minRadius + t * (maxRadius - minRadius);
-      const geo = new THREE.CylinderGeometry(radius, radius, RING_HEIGHT, 32);
-      const mat = new THREE.MeshPhongMaterial({ color: colors[(disk-1)%colors.length] });
-      const mesh = new THREE.Mesh(geo, mat);
+      const geo = new THREE.CylinderGeometry(radius, radius, RING_HEIGHT, 32); // Create the ring geometry
+      const mat = new THREE.MeshPhongMaterial({ color: colors[(disk-1)%colors.length] }); // Create the ring material
+      const mesh = new THREE.Mesh(geo, mat); // Create the ring
       // Y position: bottom ring sits just above the board, others stack above
       mesh.position.set(
         PEG_POSITIONS[pegIdx],
@@ -171,10 +175,10 @@ function quitGame() {
 // Drag & drop logic
 let raycaster = null, mouse = null, dragRing = null, dragOrig = null;
 function enableDragDrop() {
-  raycaster = new THREE.Raycaster();
-  mouse = new THREE.Vector2();
-  renderer.domElement.addEventListener('pointerdown', onPointerDown);
-  renderer.domElement.addEventListener('pointermove', onPointerMove);
+  raycaster = new THREE.Raycaster(); // Create the raycaster
+  mouse = new THREE.Vector2(); // Create the mouse
+  renderer.domElement.addEventListener('pointerdown', onPointerDown); // Add event listener for pointer down
+  renderer.domElement.addEventListener('pointermove', onPointerMove); // Add event listener for pointer move
   renderer.domElement.addEventListener('pointerup', onPointerUp);
 }
 
@@ -212,6 +216,7 @@ function onPointerDown(event) {
   }
 }
 
+// Move the ring
 function onPointerMove(event) {
   if (!dragRing) return;
   const rect = renderer.domElement.getBoundingClientRect();
@@ -219,11 +224,11 @@ function onPointerMove(event) {
   mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
   raycaster.setFromCamera(mouse, camera);
   const planeY = BOARD_Y + RING_HEIGHT/2 + (numDisks-1)*RING_HEIGHT/2;
-  const plane = new THREE.Plane(new THREE.Vector3(0, 1, 0), -planeY);
-  const intersect = new THREE.Vector3();
-  raycaster.ray.intersectPlane(plane, intersect);
-  dragRing.position.x = intersect.x;
-  dragRing.position.z = intersect.z;
+  const plane = new THREE.Plane(new THREE.Vector3(0, 1, 0), -planeY); // Create the plane
+  const intersect = new THREE.Vector3(); // Create the intersect
+  raycaster.ray.intersectPlane(plane, intersect); // Intersect the ray with the plane
+  dragRing.position.x = intersect.x; // Set the x-position of the ring
+  dragRing.position.z = intersect.z; // Set the z-position of the ring
 }
 
 async function onPointerUp(event) {
