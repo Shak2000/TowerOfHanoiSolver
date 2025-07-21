@@ -35,6 +35,15 @@ async def get_script():
     return FileResponse("script.js")
 
 
+@app.get("/three-ui.html")
+async def get_three_ui():
+    return FileResponse("three-ui.html")
+
+@app.get("/three-ui.js")
+async def get_three_ui_js():
+    return FileResponse("three-ui.js")
+
+
 @app.post("/move")
 async def move(src: int = Query(..., description="Source peg index"),
                dst: int = Query(..., description="Destination peg index")):
