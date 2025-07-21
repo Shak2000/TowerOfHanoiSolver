@@ -9,9 +9,10 @@ let dragging = null, dragOffset = null;
 let boardState = [[], [], []];
 let animating = false;
 
-const PEG_HEIGHT = 120, PEG_RADIUS = 4, RING_HEIGHT = 10, BASE_Y = 0;
+let PEG_HEIGHT = 120;
+const PEG_RADIUS = 4, RING_HEIGHT = 10, BASE_Y = 0;
 const PEG_POSITIONS = [-40, 0, 40];
-const BOARD_Y = 0; // Y position of the board base
+const BOARD_Y = -30; // Y position of the board base (lowered for centering)
 
 function showInGame(show) {
   document.querySelectorAll('.in-game').forEach(btn => {
@@ -57,8 +58,16 @@ function init3D() {
   const base = new THREE.Mesh(baseGeo, baseMat);
   base.position.y = BOARD_Y + 2;
   scene.add(base);
-  // Pegs
+  // Pegs (created in createRings based on numDisks)
   pegs = [];
+}
+
+function createPegs() {
+  // Remove old pegs
+  pegs.forEach(peg => scene.remove(peg));
+  pegs = [];
+  // Set PEG_HEIGHT dynamically
+  PEG_HEIGHT = RING_HEIGHT * numDisks + 30;
   for (let i = 0; i < 3; i++) {
     const pegGeo = new THREE.CylinderGeometry(PEG_RADIUS, PEG_RADIUS, PEG_HEIGHT, 32);
     const pegMat = new THREE.MeshPhongMaterial({ color: 0x1976d2 });
@@ -67,10 +76,6 @@ function init3D() {
     scene.add(peg);
     pegs.push(peg);
   }
-  // Add grid helper for debugging
-  const gridHelper = new THREE.GridHelper(200, 10);
-  scene.add(gridHelper);
-  // (Removed debug red cube)
 }
 
 function onWindowResize() {
@@ -94,6 +99,8 @@ function createRings(board) {
   const maxRadius = Math.abs(pegSpacing) / 2 - 4; // 4px margin from peg
   const minRadius = maxRadius * 0.4; // Smallest ring is 40% of largest
   const colors = [0xff7043, 0x66bb6a, 0x29b6f6, 0xffca28, 0xab47bc, 0x26a69a, 0x8d6e63, 0x789262, 0xba68c8, 0xd4e157];
+  // The board's top is at BOARD_Y + 2 (board is 4 units thick)
+  // The bottom ring's center should be at BOARD_Y + 2 + RING_HEIGHT/2
   for (let pegIdx = 0; pegIdx < 3; pegIdx++) {
     const peg = board[pegIdx];
     for (let i = 0; i < peg.length; i++) {
@@ -104,7 +111,12 @@ function createRings(board) {
       const geo = new THREE.CylinderGeometry(radius, radius, RING_HEIGHT, 32);
       const mat = new THREE.MeshPhongMaterial({ color: colors[(disk-1)%colors.length] });
       const mesh = new THREE.Mesh(geo, mat);
-      mesh.position.set(PEG_POSITIONS[pegIdx], BOARD_Y + RING_HEIGHT/2 + i*RING_HEIGHT, 0);
+      // Y position: bottom ring sits just above the board, others stack above
+      mesh.position.set(
+        PEG_POSITIONS[pegIdx],
+        BOARD_Y + 2 + RING_HEIGHT/2 + i*RING_HEIGHT,
+        0
+      );
       mesh.userData = { peg: pegIdx, index: i, disk };
       scene.add(mesh);
       rings.push({ mesh, peg: pegIdx, index: i, disk });
@@ -119,6 +131,7 @@ function animate() {
 }
 
 async function render3D(forcedBoard = null) {
+  createPegs();
   const board = forcedBoard || (await (await fetch('/state')).json()).board;
   boardState = board.map(peg => peg.slice());
   createRings(board);
