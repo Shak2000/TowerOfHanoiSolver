@@ -28,11 +28,11 @@ The Three.js interface provides an immersive 3D experience with drag-and-drop co
 - Python 3.7+
 - Modern web browser with JavaScript enabled
 
-### Setup
+### Local Setup
 1. Clone or download the project files
 2. Install required Python dependencies:
    ```bash
-   pip install fastapi uvicorn
+   pip install -r requirements.txt
    ```
 
 3. Run the FastAPI server:
@@ -44,6 +44,42 @@ The Three.js interface provides an immersive 3D experience with drag-and-drop co
    - 2D Interface: `http://localhost:8000/`
    - 3D Interface: `http://localhost:8000/three-ui.html`
 
+## Deployment
+
+### Deploy to GCP Cloud Run
+
+This application includes a one-command deployment script for Google Cloud Platform's Cloud Run service.
+
+#### Prerequisites for Deployment
+- Docker installed locally
+- Google Cloud CLI installed and authenticated
+- GCP project created and configured
+
+#### Quick Deployment
+```bash
+# Configure your GCP project
+gcloud config set project YOUR_PROJECT_ID
+gcloud auth configure-docker
+
+# Deploy with one command
+./deploy.sh
+```
+
+The script will:
+1. Build a Docker container (linux/amd64 architecture for Cloud Run)
+2. Push to Google Container Registry
+3. Deploy to Cloud Run in us-west1 region
+4. Output your live service URL
+
+#### Cloud Run Free Tier
+The deployment is configured to stay within Cloud Run's free tier:
+- 2 million requests/month
+- 360,000 GB-seconds of memory/month
+- 180,000 vCPU-seconds/month
+- Max 1 instance to prevent scaling costs
+
+**Note**: The application will cold start after ~15 minutes of inactivity on the free tier.
+
 ## File Structure
 
 ```
@@ -54,7 +90,11 @@ tower-of-hanoi/
 ├── three-ui.html       # 3D interface HTML
 ├── script.js           # 2D interface JavaScript
 ├── three-ui.js         # 3D interface JavaScript with Three.js
-└── styles.css          # Shared CSS styles
+├── styles.css          # Shared CSS styles
+├── requirements.txt    # Python dependencies
+├── Dockerfile          # Container definition for Cloud Run
+├── deploy.sh           # Automated deployment script
+└── .dockerignore       # Files excluded from Docker build
 ```
 
 ## How to Play
@@ -95,6 +135,7 @@ The Tower of Hanoi follows these classic rules:
 - **FastAPI**: Modern Python web framework for the REST API
 - **Game Logic**: Recursive solver using the classic three-peg algorithm
 - **State Management**: In-memory game state with move history for undo functionality
+- **Containerization**: Docker support for easy deployment to cloud platforms
 
 ### Frontend
 - **2D Interface**: Vanilla JavaScript with DOM manipulation
